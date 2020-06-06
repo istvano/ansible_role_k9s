@@ -1,0 +1,55 @@
+---
+- name: create download directory for k9s installation
+  file:
+    state: directory
+    mode: 'u=rwx,go=rx'
+    dest: '{{ k9s_download_dir }}'
+
+- name: download k9s
+  get_url:
+    url: '{{ k9s_mirror }}/{{ k9s_redistribution_filename }}'
+    dest: '{{ k9s_download_dir }}/{{ k9s_download_filename }}'
+    sha256sum: '{{ k9s_redistribution_sha256sum }}'
+    force: no
+    use_proxy: yes
+    validate_certs: yes
+    mode: 'u=rw,go=r'
+
+- name: create the k9s staging dir
+  file:
+    state: directory
+    mode: 'u=rwx,go=rx'
+    dest: '{{ k9s_staging_dir }}'
+
+- name: install unarchive module dependencies (apt, yum, dnf, zypper)
+  become: yes
+  package:
+    name:
+      - tar
+      - unzip
+    state: present
+  when: ansible_pkg_mgr in ('apt', 'yum', 'dnf', 'zypper')
+
+- name: extract k9s
+  unarchive:
+    remote_src: yes
+    src: '{{ k9s_download_dir }}/{{ k9s_download_filename }}'
+    dest: '{{ k9s_staging_dir }}'
+    exclude: '{{ k9s_excluded_files }}'
+    creates: '{{ k9s_staging_dir }}/{{ k9s_redistribution_executable_filename }}'
+
+- name: create the k9s installation dir
+  become: yes
+  file:
+    state: directory
+    dest: '{{ k9s_install_dir }}'
+
+- name: install k9s
+  become: yes
+  copy:
+    src: '{{ k9s_staging_dir }}/{{ k9s_redistribution_executable_filename }}'
+    remote_src: yes
+    dest: '{{ k9s_install_dir }}/k9s'
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'

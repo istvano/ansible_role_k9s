@@ -1,0 +1,19 @@
+---
+k9s_os: 'Linux'
+
+k9s_platform: x86_64
+
+# https://github.com/derailed/k9s/releases/download/v0.20.5/k9s_Linux_x86_64.tar.gz
+k9s_redistribution_filename: 'k9s_{{ k9s_os }}_{{ k9s_platform }}.tar.gz'
+
+# File name of the k9s download file
+k9s_download_filename: 'k9s-v{{ k9s_version }}-{{ k9s_os }}-{{ k9s_platform }}.tar.gz'
+
+# Path of the staging dir
+k9s_staging_dir: '{{ k9s_download_dir }}/k9s-v{{ k9s_version }}-{{ k9s_os }}-{{ k9s_platform }}'
+
+# File name of the k9s executable in the redistributable file
+k9s_redistribution_executable_filename: 'k9s'
+
+# Dir where k9s should be installed
+k9s_install_dir: '/usr/local/bin'
