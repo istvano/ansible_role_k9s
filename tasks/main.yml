@@ -9,7 +9,7 @@
   get_url:
     url: '{{ k9s_mirror }}/{{ k9s_redistribution_filename }}'
     dest: '{{ k9s_download_dir }}/{{ k9s_download_filename }}'
-    sha256sum: '{{ k9s_redistribution_sha256sum }}'
+    checksum: 'sha256:{{ k9s_redistribution_sha256sum }}'
     force: no
     use_proxy: yes
     validate_certs: yes
@@ -37,12 +37,14 @@
     dest: '{{ k9s_staging_dir }}'
     exclude: '{{ k9s_excluded_files }}'
     creates: '{{ k9s_staging_dir }}/{{ k9s_redistribution_executable_filename }}'
+    mode: 'u=rwx,go=rx'
 
 - name: create the k9s installation dir
   become: yes
   file:
     state: directory
     dest: '{{ k9s_install_dir }}'
+    mode: 'u=rwx,go=rx'
 
 - name: install k9s
   become: yes
